@@ -28,7 +28,7 @@ To test the application locally, use this endpoint:
  
 **URL**  -  http://localhost:9090/webtools/webcrawler/scan	 
 
-**Body** - { "url": "https://www.australia.com/","breakPoint": 100,"domainOnly": false} 
+**Body** - { "url": "https://www.australia.com/", "breakPoint": 100, "domainOnly": false} 
 
 
 
