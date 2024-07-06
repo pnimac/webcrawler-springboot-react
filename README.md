@@ -7,7 +7,7 @@ A simple web crawler built with Spring Boot and Kafka.
 # Deployment
 1. Navigate to this docker-compose file and initialize the environment using command:
 
-**docker-compose up -d**
+`**docker-compose up -d**`
 
 2. Run the application using command:
 
