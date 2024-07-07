@@ -1,6 +1,11 @@
 # Project Description
 A simple web crawler built with Spring Boot and Kafka.
 
+# Screen Capture
+![use case](postman-response.png)
+
+![use case](kafka-data.png)
+
 # UseCase
 ![use case](usecase.png)
 
