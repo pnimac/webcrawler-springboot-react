@@ -1,11 +1,17 @@
 package com.pnimac.webcrawler.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
@@ -26,6 +32,8 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
 
 	@Value("${default-pattern}")
 	private String defaultPattern;
+	
+    private static final int THREAD_POOL_SIZE = 10;
 
 	@Autowired
 	public WebCrawlerServiceImpl(ScanUtils scanUtils) {
@@ -43,81 +51,70 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
 	@Override
 	public List<String> scan(String rootURL, boolean rootOnly, Integer breakpoint) throws IOException {
 
-		// urls to be scanned
-		Queue<String> urlQueue = new LinkedList<>();
-		// already scanned urls
-		List<String> visitedURLs = new ArrayList<>();
+		Queue<String> urlQueue = new LinkedList<>();		// urls to be scanned
 
-		UriComponents uriComponents = scanUtils.analyze(rootURL);
-		log.info("host: {}", uriComponents.getHost());
+        Set<String> visitedURLs = ConcurrentHashMap.newKeySet();		// already scanned urls
 
-		// initialize the queue with root url
-		urlQueue.add(rootURL);
-		visitedURLs.add(rootURL);
+        UriComponents uriComponents = scanUtils.analyze(rootURL);
+        log.info("host: {}", uriComponents.getHost());
 
-		Matcher matcher;
+        urlQueue.add(rootURL);		// initialize the queue with root url
 
-		if (rootOnly) {
-			while (!urlQueue.isEmpty()) {
-				// remove the head url string from this queue to begin traverse.
-				URL url = new URL(urlQueue.remove());
+        visitedURLs.add(rootURL);
 
-				matcher = pattern.matcher(scanUtils.getHtmlContent(url));
-				// Each time the regex matches a URL in the HTML,
-				// add it to the queue for the next traverse and to the list of visited URLs.
-				breakpoint = getBreakpoint(urlQueue, visitedURLs, matcher, breakpoint, uriComponents.getHost());
+        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-				// exit the outermost loop if it reaches the breakpoint.
-				if (breakpoint == 0)
-					break;
-			}
-		} else {
-			while (!urlQueue.isEmpty()) {
-				URL url = new URL(urlQueue.remove());
-				matcher = pattern.matcher(scanUtils.getHtmlContent(url));
-				// case we needed to include all results
-				breakpoint = getBreakpoint(urlQueue, visitedURLs, matcher, breakpoint);
-				if (breakpoint == 0)
-					break;
-			}
-		}
-		log.info("num of results: {}", visitedURLs.size());
-		return visitedURLs;
+        while (!urlQueue.isEmpty() && breakpoint > 0) {
+            URL url = new URL(urlQueue.remove());				// remove the head url string from this queue to begin traverse.
+
+            executorService.submit(() -> {
+                try {
+                    Matcher matcher = pattern.matcher(scanUtils.getHtmlContent(url));
+                    if (rootOnly) {
+                    	// Each time the regex matches a URL in the HTML,
+        				// add it to the queue for the next traverse and to the list of visited URLs.
+                        processUrls(urlQueue, visitedURLs, matcher, breakpoint, uriComponents.getHost());
+                    } else {
+        				// case we needed to include all results
+                        processUrls(urlQueue, visitedURLs, matcher, breakpoint);
+                    }
+                } catch (IOException e) {
+                    log.error("Error processing URL: {}", url, e);
+                }
+            });
+
+            breakpoint--;
+        }
+
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.HOURS);
+
+        log.info("num of results: {}", visitedURLs.size());
+        return new ArrayList<>(visitedURLs);
+		
 	}
 
-	private int getBreakpoint(Queue<String> urlQueue, List<String> visitedURLs, Matcher matcher, int breakpoint) {
-		while (matcher.find()) {
-			String currentURL = matcher.group();
+	
+	private void processUrls(Queue<String> urlQueue, Set<String> visitedURLs, Matcher matcher, int breakpoint, String... host) {
+        while (matcher.find() && breakpoint > 0) {
+            String currentURL = matcher.group();
+            boolean valid = host.length == 0 || currentURL.contains(host[0]);
+            if (valid && visitedURLs.add(currentURL)) {
+                urlQueue.add(currentURL);
+                breakpoint--;
+            }
+        }
+    }
 
-			if (!visitedURLs.contains(currentURL)) {
-				visitedURLs.add(currentURL);
-				urlQueue.add(currentURL);
-			}
-			// exit the loop if it reaches the breakpoint.
-			if (breakpoint == 0) {
-				break;
-			}
-			breakpoint--;
-		}
-		return breakpoint;
-	}
-
-	private int getBreakpoint(Queue<String> urlQueue, List<String> visitedURLs, Matcher matcher, int breakpoint,
-			String domain) {
-		while (matcher.find()) {
-			String currentURL = matcher.group();
-
-			if (!visitedURLs.contains(currentURL) && currentURL.contains(domain)) {
-				visitedURLs.add(currentURL);
-				urlQueue.add(currentURL);
-			}
-			// exit the loop if it reaches the breakpoint.
-			if (breakpoint == 0)
-				break;
-
-			breakpoint--;
-		}
-		return breakpoint;
-	}
-
+    private boolean isValidUrl(String url, String host) {
+        try {
+            URL parsedUrl = new URL(url);
+            return parsedUrl.getHost().equals(host);
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+    
+    
+	
 }

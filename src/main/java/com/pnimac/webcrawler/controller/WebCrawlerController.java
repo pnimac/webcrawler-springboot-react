@@ -15,7 +15,7 @@ import com.pnimac.webcrawler.db.entity.OperationStatus;
 import com.pnimac.webcrawler.model.GenericResponse;
 import com.pnimac.webcrawler.model.ScanRequest;
 import com.pnimac.webcrawler.service.OperationService;
-import com.pnimac.webcrawler.service.WebCrawlerService;s
+import com.pnimac.webcrawler.service.WebCrawlerService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
