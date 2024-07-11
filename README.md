@@ -27,11 +27,11 @@ An asynchronous HTTP GET request is submitted using **HttpClient.sendAsync** to 
 
 The response is handled non-blockingly using **thenApply** and **thenAccept**. This allows the crawler to continue processing other tasks while waiting for the response. The web server at **github.com** responds with the HTML content of the homepage. 
 
-## Step 5:Parsing the HTML Content:
+## Step 5: Parsing the HTML Content:
 
 We use **JSoup** Java library to parse the HTML content and  extract all the links (URLs) present on the homepage, basically extract all anchor tags.
 
-## Step 6:Continuation and Chaining:
+## Step 6: Continuation and Chaining:
 
 The crawler then sends HTTP requests to each of these links and repeats the above steps. The **CompletableFuture** API allows chaining multiple asynchronous operations, making it easier to build complex workflows without blocking.
 
