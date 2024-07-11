@@ -1,23 +1,27 @@
-# Overview
+# Description
 A simple asynchronous web crawler built in Spring Boot. 
 
-# Usecase
+# Feature
 
 1. The crawler is limited to one domain, i.e. when you start with **https://github.com/**, it would crawl all pages within this domain, but not follow external links like Facebook and Twitter links.
 
 2. Given a URL, it will print a simple site map, showing the links between pages.
 
-3. We are not rendering the resulting sitemap in a fancy UI (for now), as we are more focused on the web crawling logic - its structure and behaviour.
+3. The resulting sitemap is not rendered in a fancy UI (for now), as the focus of this project is the web crawling logic, its structure and behaviour.
+
+# Work-flow:
+
+![workflow](images/sequence.png)
 
 # Asynchronous Web crawling Process:
 
 ## Step 1: Starting the Crawler:
 
-We provide **https://github.com/** as our root URL and want to retrieve all links from this website.
+For instance, lets provide **https://github.com/** as our root URL and want to retrieve all links from this website.
 
 ## Step 2: Create a HttpClient:
  
- We create a new **HttpClient** using the builder pattern. The executor method of the builder is used to set a custom **Executor** for handling asynchronous tasks. That way the HttpClient uses this executor service to manage its threads for asynchronous tasks, such as sending HTTP requests and receiving responses. This configuration is crucial because the web crawler might need to send multiple HTTP requests concurrently to fetch and process web pages.
+ A new **HttpClient** is created using the builder pattern. The executor method of the builder is used to set a custom **Executor** for handling asynchronous tasks. That way the HttpClient uses this executor service to manage its threads for asynchronous tasks, such as sending HTTP requests and receiving responses. This configuration is crucial because the web crawler might need to send multiple HTTP requests concurrently to fetch and process web pages.
 
 ## Step 3: Send an Asynchronous HTTP Request:
 
@@ -29,11 +33,11 @@ The response is handled non-blockingly using **thenApply** and **thenAccept**. T
 
 ## Step 5: Parsing the HTML Content:
 
-We use **JSoup** Java library to parse the HTML content and  extract all the links (URLs) present on the homepage, basically extract all anchor tags.
+**JSoup** Java library is used to parse the HTML content and  extract all the URLs present on the homepage, basically extract all anchor tags.
 
 ## Step 6: Continuation and Chaining:
 
-The crawler then sends HTTP requests to each of these links and repeats the above steps. The **CompletableFuture** API allows chaining multiple asynchronous operations, making it easier to build complex workflows without blocking.
+The crawler then sends HTTP requests to each of these URLs and repeats the above steps. The **CompletableFuture** API allows chaining multiple asynchronous operations, making it easier to build complex workflows without blocking.
 
 # Tech Stack:
 
