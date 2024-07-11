@@ -1,0 +1,13 @@
+*.DS_Store
+*.project
+*.classpath
+*.mvn
+*.Help.md
+*.mvnw
+*.mvnw.cmd
+*.factorypath
+
+**/.metadata/
+**/.settings/
+**/target/
+

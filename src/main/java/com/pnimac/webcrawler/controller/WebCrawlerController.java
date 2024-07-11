@@ -2,20 +2,19 @@ package com.pnimac.webcrawler.controller;
 
 import java.io.IOException;
 import java.util.List;
-import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pnimac.webcrawler.db.entity.Operation;
-import com.pnimac.webcrawler.db.entity.OperationStatus;
-import com.pnimac.webcrawler.model.GenericResponse;
-import com.pnimac.webcrawler.model.ScanRequest;
-import com.pnimac.webcrawler.service.OperationService;
+
+import com.pnimac.webcrawler.request.ScanRequest;
+import com.pnimac.webcrawler.response.ScanResponse;
 import com.pnimac.webcrawler.service.WebCrawlerService;
+
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,26 +24,18 @@ public class WebCrawlerController {
 
 	private final WebCrawlerService crawlerService;
 
-	private final OperationService operationService;
-
-	private final ObjectMapper mapper = new ObjectMapper();
-
 	@Autowired
-	public WebCrawlerController(WebCrawlerService crawlerService, OperationService operationService) {
+	public WebCrawlerController(WebCrawlerService crawlerService) {
 		this.crawlerService = crawlerService;
-		this.operationService = operationService;
 	}
 
 	@PostMapping("/scan")
-	public ResponseEntity<GenericResponse> scan(@Valid @RequestBody ScanRequest scanRequest) throws IOException {
-		log.info("getting info for: {}", scanRequest.getUrl());
+	public ResponseEntity<ScanResponse> scan(@Valid @RequestBody ScanRequest scanRequest) throws IOException, InterruptedException {
+		log.info("WebCrawler Scan Request begins for: {}", scanRequest.getUrl());
 		List<String> list = crawlerService.scan(scanRequest.getUrl(), scanRequest.getDomainOnly(),
 				scanRequest.getBreakPoint());
-
-		operationService.saveOrUpdate(Operation.builder().info(mapper.writeValueAsString(scanRequest))
-				.numOfResults(list.size()).status(OperationStatus.SUCCESS).build());
 		return ResponseEntity
-				.ok(GenericResponse.builder().message("Successfully scanned!").data(list).code(2000).build());
+				.ok(ScanResponse.builder().message("Successfully scanned!").data(list).code(2000).build());
 	}
 
 }

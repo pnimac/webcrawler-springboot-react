@@ -1,47 +1,55 @@
-# Project Description
-A simple web crawler built with Spring Boot and Kafka.
+# Overview
+A simple web crawler built with Spring Boot and Kafka. 
 
-# Screen Capture
-![use case](postman-response.png)
+# Features
 
-![use case](kafka-data.png)
+1. The crawler is limited to one domain, i.e. when you start with **https://github.com/**, it would crawl all pages within this domain, but not follow external links like Facebook and Twitter links.
 
-# UseCase
-![use case](usecase.png)
+2. Given a URL, it will print a simple site map, showing the links between pages.
 
-# Deployment
-1. Navigate to this docker-compose file and initialize the environment using command:
+3. We are not rendering the resulting sitemap in a fancy UI (for now), as we are more focused on the web crawling logic - its structure and behaviour.
 
-`docker-compose up -d`
+# Asynchronous Web crawling Process:
 
-2. Run the application using command:
+## Step 1: Starting the Crawler:
 
-`mvn spring-boot:run`
+We provide **https://github.com/** as our root URL and want to retrieve all links from this website.
 
-3. Build a Docker image from the DockerFile provided:
+## Step 2: Create a HttpClient:
+ 
+ We create a new **HttpClient** using the builder pattern. The executor method of the builder is used to set a custom **Executor** for handling asynchronous tasks. That way the HttpClient uses this executor service to manage its threads for asynchronous tasks, such as sending HTTP requests and receiving responses. This configuration is crucial because the web crawler might need to send multiple HTTP requests concurrently to fetch and process web pages.
 
-`mvn clean package`
+## Step 3: Send an Asynchronous HTTP Request:
 
-`docker build -f DockerFile --tag=zatribune-webcrawler:latest`
+An asynchronous HTTP GET request is submitted using **HttpClient.sendAsync** to the root URL.
 
+## Step 4: Non-blocking Response Handling:
+
+The response is handled non-blockingly using **thenApply** and **thenAccept**. This allows the crawler to continue processing other tasks while waiting for the response. The web server at **github.com** responds with the HTML content of the homepage. 
+
+## Step 5:Parsing the HTML Content:
+
+We use **JSoup** Java library to parse the HTML content and  extract all the links (URLs) present on the homepage, basically extract all anchor tags.
+
+## Step 6:Continuation and Chaining:
+
+The crawler then sends HTTP requests to each of these links and repeats the above steps. The **CompletableFuture** API allows chaining multiple asynchronous operations, making it easier to build complex workflows without blocking.
+
+# Tech Stack:
+
+* Java
+* Spring Boot
+* Maven
+
+# Screenshots
+![postman response](images/postman-response.png)
 
 # Testing
 
-To test the application locally, use this endpoint:
+1. To test the application locally, you can use POSTMAN or Curl to request this endpoint:
 
 `Method  - POST `
  
-`URL  -  http://localhost:9090/webtools/webcrawler/scan	 `
+`URL  -  http://localhost:8080/webcrawler/scan	 `
 
-`Body - { "url": "https://www.australia.com/", "breakPoint": 100, "domainOnly": false} `
-
-
-
-You can open the KafDrop dashboard and see Kafka cluster log messages via url:
-
-`http://localhost:9000/`
-
-
-Also, You can open the H2 DB dashboard via url:
-
-`http://localhost:9090/webtools/h2-console`
+`Body - { "url": "https://github.com/", "breakPoint": 100, "domainOnly": false} `

@@ -1,4 +1,4 @@
-package com.pnimac.webcrawler.model;
+package com.pnimac.webcrawler.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GenericResponse {
+public class ScanResponse {
 	private String message;
 
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -21,5 +21,6 @@ public class GenericResponse {
 
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private Object data;
+	
 	private int code;
 }
