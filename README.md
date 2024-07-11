@@ -1,7 +1,7 @@
 # Overview
-A simple web crawler built with Spring Boot and Kafka. 
+A simple asynchronous web crawler built in Spring Boot. 
 
-# Features
+# Usecase
 
 1. The crawler is limited to one domain, i.e. when you start with **https://github.com/**, it would crawl all pages within this domain, but not follow external links like Facebook and Twitter links.
 
