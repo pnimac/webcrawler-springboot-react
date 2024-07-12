@@ -1,13 +1,14 @@
 # Description
-A simple asynchronous web crawler built in Spring Boot. 
+
+An asynchronous web crawler implemented using Spring Boot.
 
 # Feature
 
-1. The crawler is limited to one domain, i.e. when you start with **https://github.com/**, it would crawl all pages within this domain, but not follow external links like Facebook and Twitter links.
+* The web crawler is restricted to a single domain. For example, starting with https://github.com/, it will crawl all pages within the GitHub domain but will not follow external links such as those to Facebook or Twitter.
 
-2. Given a URL, it will print a simple site map, showing the links between pages.
+* Upon receiving a URL, the crawler generates a simple site map, illustrating the links between the pages.
 
-3. The resulting sitemap is not rendered in a fancy UI (for now), as the focus of this project is the web crawling logic, its structure and behaviour.
+* The resulting sitemap is not rendered in a fancy UI (for now), as the primary objective of this project is the web crawling logic, its structure and behaviour.
 
 # Work-flow:
 
