@@ -8,7 +8,12 @@ An asynchronous web crawler implemented using Spring Boot.
 
 * Upon receiving a URL, the crawler generates a simple site map, illustrating the links between the pages.
 
-* The resulting sitemap is not rendered in a fancy UI (for now), as the primary objective of this project is the web crawling logic, its structure and behaviour.
+* The resulting sitemap is rendered using React.
+
+# Screenshots
+![react site map](images/reactresult.png)
+
+![postman response](images/postman-response.png)
 
 # Work-flow:
 
@@ -45,15 +50,15 @@ The crawler then sends HTTP requests to each of these URLs and repeats the above
 * Java
 * Spring Boot
 * Maven
-
-# Screenshots
-![postman response](images/postman-response.png)
+* React
 
 # Prerequisite
 
-Ensure you have Maven installed. You can verify this by running mvn -v in your terminal.
+* Ensure you have Maven installed. You can verify this by running mvn -v in your terminal.
 
-Ensure you have JDK installed. You can verify this by running java -version in your terminal.
+* Ensure you have JDK installed. You can verify this by running java -version in your terminal.
+
+* Ensure you have Node.js and npm (Node Package Manager) installed. You can verify this by running node -v and npm -v in your terminal.
 
 # Testing
 
@@ -61,8 +66,11 @@ Ensure you have JDK installed. You can verify this by running java -version in y
 
 `mvn clean install && mvn spring-boot:run`
 
+2. Navigate to the React client project directory and run command:
 
-2. To test the application locally, you can use POSTMAN or Curl to request this endpoint:
+`npm install && npm start`
+
+3. You can also test the application on POSTMAN or Curl to request this endpoint:
 
 `Method  - POST `
  
