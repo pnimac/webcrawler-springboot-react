@@ -1,6 +1,6 @@
 # Description
 
-An asynchronous web crawler implemented using Spring Boot.
+An asynchronous web crawler implemented using Spring Boot and resulting Sitemap being rendered in React.
 
 # Feature
 
