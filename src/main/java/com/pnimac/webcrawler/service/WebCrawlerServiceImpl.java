@@ -46,7 +46,7 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
 	}
 
 	@Override
-	public List<String> scan(String rootURL, boolean rootOnly, Integer breakpoint)
+	public List<String> scan(String rootURL, Integer breakpoint)
 			throws IOException, InterruptedException {
 
 		Queue<String> urlQueue = new ConcurrentLinkedQueue<>(); // thread-safe queue to hold URLs to be processed.
@@ -57,7 +57,8 @@ public class WebCrawlerServiceImpl implements WebCrawlerService {
 
 		urlQueue.add(rootURL);
 		visitedURLs.add(rootURL);
-
+		boolean rootOnly = false;
+		
 		AtomicInteger remainingBreakpoints = new AtomicInteger(breakpoint);//thread-safe
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 		// Continues processing as long as there are URLs in the queue and the breakpoint limit has not been reached.

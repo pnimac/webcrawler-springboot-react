@@ -32,8 +32,7 @@ public class WebCrawlerController {
 	@PostMapping("/scan")
 	public ResponseEntity<ScanResponse> scan(@Valid @RequestBody ScanRequest scanRequest) throws IOException, InterruptedException {
 		log.info("WebCrawler Scan Request begins for: {}", scanRequest.getUrl());
-		List<String> list = crawlerService.scan(scanRequest.getUrl(), scanRequest.getDomainOnly(),
-				scanRequest.getBreakPoint());
+		List<String> list = crawlerService.scan(scanRequest.getUrl(), scanRequest.getBreakPoint());
 		return ResponseEntity
 				.ok(ScanResponse.builder().message("Successfully scanned!").data(list).code(2000).build());
 	}

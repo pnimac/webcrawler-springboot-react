@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface WebCrawlerService {
 	
-	List<String> scan(String rootURL, boolean rootOnly, Integer breakPoint) throws IOException, InterruptedException;
+	List<String> scan(String rootURL, Integer breakPoint) throws IOException, InterruptedException;
 
 }

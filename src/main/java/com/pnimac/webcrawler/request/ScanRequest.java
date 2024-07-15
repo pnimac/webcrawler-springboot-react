@@ -21,5 +21,4 @@ public class ScanRequest {
 
 	private Integer breakPoint;
 
-	private Boolean domainOnly;
 }
