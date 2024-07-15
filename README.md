@@ -13,7 +13,7 @@ An asynchronous web crawler implemented using Spring Boot.
 # Screenshots
 ![react site map](images/reactresult.png)
 
-![postman response](images/postman-response.png)
+![react site map](images/reactresult-2.png)
 
 # Work-flow:
 
